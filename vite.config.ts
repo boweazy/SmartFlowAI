@@ -4,7 +4,6 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig(async () => {
-  // Dynamically load cartographer plugin if not in production
   const plugins = [react(), runtimeErrorOverlay()];
 
   if (process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined) {
@@ -25,6 +24,7 @@ export default defineConfig(async () => {
     build: {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
+      chunkSizeWarningLimit: 2000, // ⬅️ raised from 500kb → 2MB
     },
     server: {
       fs: {

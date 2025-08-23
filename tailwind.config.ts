@@ -1,6 +1,46 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
-export default {
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./client/src/**/*.{js,ts,jsx,tsx}" // keep what you already have
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: "#2563EB",   // SmartFlow Blue
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af"
+        },
+        secondary: {
+          DEFAULT: "#10B981",   // SmartFlow Green
+        },
+        accent: {
+          DEFAULT: "#F59E0B",   // SmartFlow Orange
+        },
+        dark: {
+          DEFAULT: "#111827",   // Background dark
+        }
+      },
+      borderRadius: {
+        DEFAULT: "1rem",   // rounded corners everywhere
+        lg: "1.5rem",
+        full: "9999px"
+      },
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
+        heading: ["Poppins", "ui-sans-serif", "system-ui"]
+      }
+    }
+  },
+  plugins: []
+}
+
+export default config
+ {
   darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {

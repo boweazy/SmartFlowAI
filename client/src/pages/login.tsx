@@ -1,86 +1,48 @@
-/* ================================
-   SmartFlow Global Styles
-   ================================ */
+import React from "react";
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap');
+export default function Login() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-dark">
+      <div className="card w-full max-w-md">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-heading text-primary">SmartFlowAI</h1>
+          <p className="text-gray-400">Sign in to your account</p>
+        </div>
 
-/* Tailwind layers */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary text-white"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
 
-/* SmartFlow Theme Variables */
-:root {
-  --background: #111827;             /* Dark background */
-  --foreground: #ffffff;             /* Default text */
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              type="password"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary text-white"
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-  --primary: #2563eb;                /* SmartFlow Blue */
-  --primary-foreground: #ffffff;
+          <button type="submit" className="primary w-full text-center">
+            Sign In
+          </button>
+        </form>
 
-  --secondary: #10b981;              /* SmartFlow Green */
-  --secondary-foreground: #111827;
-
-  --accent: #f59e0b;                 /* SmartFlow Orange */
-  --accent-foreground: #111827;
+        <p className="text-center text-gray-500 text-sm mt-6">
+          Don’t have an account?{" "}
+          <a href="/signup" className="text-secondary hover:underline">
+            Sign up
+          </a>
+        </p>
+      </div>
+    </div>
+  );
 }
 
-/* Base Styles */
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', ui-sans-serif, system-ui;
-  line-height: 1.6;
-}
-
-/* Headings */
-h1, h2, h3, h4 {
-  font-family: 'Poppins', ui-sans-serif, system-ui;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 0.5em;
-}
-
-/* Buttons */
-button {
-  border-radius: 0.75rem;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-button.primary {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-}
-
-button.primary:hover {
-  background-color: #1d4ed8; /* darker blue */
-}
-
-button.secondary {
-  background-color: var(--secondary);
-  color: var(--secondary-foreground);
-}
-
-button.secondary:hover {
-  background-color: #047857; /* darker green */
-}
-
-button.accent {
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-}
-
-button.accent:hover {
-  background-color: #d97706; /* darker orange */
-}
-
-/* Card Style */
-.card {
-  background-color: #1f2937; /* slightly lighter dark */
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}

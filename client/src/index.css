@@ -1,187 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* ================================
+   SmartFlow Global Styles
+   ================================ */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+/* Tailwind layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Variables for SmartFlow Theme */
 :root {
-  --background: hsl(222, 84%, 4.9%);
-  --foreground: hsl(210, 40%, 98%);
-  --card: hsl(222, 84%, 4.9%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --popover: hsl(222, 84%, 4.9%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --primary: hsl(203, 89%, 53%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(217, 32%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217, 32%, 17%);
-  --muted-foreground: hsl(215, 20%, 65%);
-  --accent: hsl(217, 32%, 17%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --border: hsl(217, 32%, 17%);
-  --input: hsl(217, 32%, 17%);
-  --ring: hsl(203, 89%, 53%);
-  --chart-1: hsl(203, 89%, 53%);
-  --chart-2: hsl(159, 100%, 36%);
-  --chart-3: hsl(42, 93%, 56%);
-  --chart-4: hsl(147, 79%, 42%);
-  --chart-5: hsl(341, 75%, 51%);
-  --radius: 0.5rem;
+  --background: #111827;            /* Dark background */
+  --foreground: #ffffff;            /* Default text */
 
-  /* Dark theme colors matching design reference */
-  --dark-50: hsl(248, 50%, 98%);
-  --dark-100: hsl(249, 50%, 95%);
-  --dark-200: hsl(228, 25%, 88%);
-  --dark-300: hsl(215, 16%, 65%);
-  --dark-400: hsl(215, 14%, 58%);
-  --dark-500: hsl(215, 16%, 47%);
-  --dark-600: hsl(215, 19%, 35%);
-  --dark-700: hsl(215, 25%, 27%);
-  --dark-800: hsl(217, 33%, 17%);
-  --dark-900: hsl(222, 84%, 5%);
-  
-  /* Primary brand colors */
-  --primary-500: hsl(203, 89%, 53%);
-  --primary-600: hsl(202, 89%, 47%);
-  --primary-700: hsl(202, 90%, 40%);
+  --primary: #2563eb;               /* SmartFlow Blue */
+  --primary-foreground: #ffffff;
 
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --secondary: #10b981;             /* SmartFlow Green */
+  --secondary-foreground: #111827;
+
+  --accent: #f59e0b;                /* SmartFlow Orange */
+  --accent-foreground: #111827;
 }
 
-.dark {
-  --background: hsl(222, 84%, 4.9%);
-  --foreground: hsl(210, 40%, 98%);
-  --card: hsl(222, 84%, 4.9%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --popover: hsl(222, 84%, 4.9%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --primary: hsl(203, 89%, 53%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(217, 32%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217, 32%, 17%);
-  --muted-foreground: hsl(215, 20%, 65%);
-  --accent: hsl(217, 32%, 17%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --border: hsl(217, 32%, 17%);
-  --input: hsl(217, 32%, 17%);
-  --ring: hsl(203, 89%, 53%);
+/* Base Styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', ui-sans-serif, system-ui;
+  line-height: 1.6;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  
-  body {
-    @apply bg-background text-foreground font-sans;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+/* Headings */
+h1, h2, h3, h4 {
+  font-family: 'Poppins', ui-sans-serif, system-ui;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.5em;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Buttons */
+button {
+  border-radius: 0.75rem;           /* Rounded edges */
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+/* Primary button */
+button.primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
-::-webkit-scrollbar-track {
-  background: hsl(var(--dark-800));
+button.primary:hover {
+  background-color: #1d4ed8;        /* Darker blue */
 }
 
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--dark-600));
-  border-radius: 3px;
+/* Secondary button */
+button.secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--dark-500));
+button.secondary:hover {
+  background-color: #047857;        /* Darker green */
 }
 
-/* Sidebar active state */
-.sidebar-nav-active {
-  @apply bg-primary/10 text-primary border-r-2 border-primary;
+/* Accent button */
+button.accent {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
-/* Loading spinner */
-.loading-spinner {
-  @apply animate-spin rounded-full h-4 w-4 border-b-2 border-primary;
+button.accent:hover {
+  background-color: #d97706;        /* Darker orange */
 }
 
-/* Gradient backgrounds */
-.gradient-primary {
-  background: linear-gradient(135deg, hsl(var(--primary-500)) 0%, hsl(var(--primary-600)) 100%);
-}
-
-/* Chart styles */
-.chart-tooltip {
-  @apply bg-card border border-border rounded-lg shadow-lg p-3 text-sm;
-}
-
-/* Form styles */
-.form-error {
-  @apply text-red-500 text-sm mt-1;
-}
-
-.form-success {
-  @apply text-green-500 text-sm mt-1;
-}
-
-/* Animation classes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Platform colors */
-.platform-instagram {
-  @apply bg-pink-500;
-}
-
-.platform-twitter {
-  @apply bg-blue-400;
-}
-
-.platform-linkedin {
-  @apply bg-blue-500;
-}
-
-.platform-facebook {
-  @apply bg-blue-600;
-}
-
-/* Status colors */
-.status-published {
-  @apply bg-green-500;
-}
-
-.status-scheduled {
-  @apply bg-yellow-500;
-}
-
-.status-draft {
-  @apply bg-gray-500;
-}
-
-.status-failed {
-  @apply bg-red-500;
+/* Cards */
+.card {
+  background-color: #1f2937;        /* Slightly lighter dark */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }

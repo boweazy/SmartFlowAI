@@ -28,15 +28,22 @@ export default function Login() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
 
-      // Save token to localStorage
+      if (!res.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      if (!data.token) {
+        throw new Error("No token returned from server");
+      }
+
+      // Save JWT to localStorage
       localStorage.setItem("token", data.token);
 
       // Redirect to dashboard
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -44,7 +51,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--background)] text-[var(--foreground)] px-4">
-      <div className="card w-full max-w-md">
+      <div className="card w-full max-w-md shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-6">
           {isRegister ? "Create Account" : "Login"}
         </h1>
@@ -90,7 +97,11 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[var(--primary)] hover:bg-blue-700 text-white py-2 rounded-md font-semibold"
+            className={`w-full py-2 rounded-md font-semibold transition ${
+              loading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-[var(--primary)] hover:bg-blue-700 text-white"
+            }`}
           >
             {loading ? "Loading..." : isRegister ? "Register" : "Login"}
           </button>

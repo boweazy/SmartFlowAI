@@ -1,90 +1,66 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { type User, type InsertUser } from "@shared/schema";
+import { Router } from "express";
+import { authService } from "../services/auth";
 import { storage } from "../storage";
+import { insertUserSchema } from "@shared/schema";
+import { z } from "zod";
+import { authenticateToken } from "../middleware/auth";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-jwt-secret-key-change-in-production";
-const JWT_EXPIRES_IN = "7d";
+const router = Router();
 
-export interface AuthTokenPayload {
-  userId: string;
-  email: string;
-  tenantId: string | null;
-}
+// Register
+router.post("/register", async (req, res) => {
+  try {
+    const userData = insertUserSchema.extend({
+      confirmPassword: z.string(),
+    }).parse(req.body);
 
-export class AuthService {
-  async register(userData: InsertUser & { confirmPassword: string }): Promise<{ user: User; token: string }> {
-    // Check if user already exists
-    const existingUser = await storage.getUserByEmail(userData.email);
-    if (existingUser) {
-      throw new Error("User already exists with this email");
+    if (userData.password !== userData.confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(userData.password, 12);
-
-    // Create user
-    const user = await storage.createUser({
-      ...userData,
-      password: hashedPassword,
-      tenantId: userData.tenantId || "default-tenant",
-    });
-
-    // Generate JWT token
-    const token = this.generateToken({
-      userId: user.id,
-      email: user.email,
-      tenantId: user.tenantId,
-    });
-
-    return { user: this.sanitizeUser(user), token };
+    const result = await authService.register(userData);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ message: error instanceof Error ? error.message : "Registration failed" });
   }
+});
 
-  async login(email: string, password: string): Promise<{ user: User; token: string }> {
-    // Find user
-    const user = await storage.getUserByEmail(email);
-    if (!user) {
-      throw new Error("Invalid email or password");
-    }
+// Login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      throw new Error("Invalid email or password");
-    }
-
-    // Generate JWT token
-    const token = this.generateToken({
-      userId: user.id,
-      email: user.email,
-      tenantId: user.tenantId,
-    });
-
-    return { user: this.sanitizeUser(user), token };
+    const result = await authService.login(email, password);
+    res.json(result);
+  } catch (error) {
+    res.status(401).json({ message: error instanceof Error ? error.message : "Login failed" });
   }
+});
 
-  async verifyToken(token: string): Promise<AuthTokenPayload> {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
-      return decoded;
-    } catch (error) {
-      throw new Error("Invalid or expired token");
-    }
+// Refresh
+router.post("/refresh", authenticateToken, async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(400).json({ message: "Token required" });
+
+    const newToken = await authService.refreshToken(token);
+    res.json({ token: newToken });
+  } catch (error) {
+    res.status(401).json({ message: "Token refresh failed" });
   }
+});
 
-  async refreshToken(token: string): Promise<string> {
-    const payload = await this.verifyToken(token);
-    return this.generateToken(payload);
+// Profile
+router.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const user = await storage.getUser((req as any).user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const { password, ...userProfile } = user;
+    res.json(userProfile);
+  } catch {
+    res.status(500).json({ message: "Failed to fetch profile" });
   }
+});
 
-  private generateToken(payload: AuthTokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-  }
-
-  private sanitizeUser(user: User): User {
-    const { password, ...sanitizedUser } = user;
-    return sanitizedUser as User;
-  }
-}
-
-export const authService = new AuthService();
+export default router;

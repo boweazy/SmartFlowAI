@@ -1,53 +1,95 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "wouter";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Fetch user profile
+    async function fetchUser() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const res = await fetch("/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      const data = await res.json();
+      setUser(data);
+    }
+
+    fetchUser();
+  }, [navigate]);
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    navigate("/login");
+  }
+
   return (
-    <div className="min-h-screen bg-dark text-white">
-      {/* Navbar */}
-      <nav className="bg-gray-900 border-b border-gray-800 p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-heading text-primary">SmartFlowAI</h1>
-        <div className="space-x-4">
-          <a href="/dashboard" className="text-gray-300 hover:text-primary">
-            Dashboard
-          </a>
-          <a href="/settings" className="text-gray-300 hover:text-primary">
-            Settings
-          </a>
-          <button className="secondary px-4 py-2">Logout</button>
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      {/* Header */}
+      <header className="p-4 flex justify-between items-center border-b border-gray-700">
+        <h1 className="text-xl font-bold text-[var(--primary)]">SmartFlowAI Dashboard</h1>
+        {user && (
+          <div className="flex items-center gap-4">
+            <span className="text-sm">{user.email}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-[var(--accent)] hover:bg-yellow-600 px-3 py-1 rounded-md text-sm"
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* Content */}
+      <main className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Posts */}
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-2 text-[var(--primary)]">📢 Posts</h2>
+          <p className="text-sm text-gray-300">Manage and create your AI-powered posts.</p>
+          <button
+            onClick={() => alert("Posts feature coming soon")}
+            className="mt-4 w-full bg-[var(--primary)] hover:bg-blue-700 text-white py-2 rounded"
+          >
+            Open Posts
+          </button>
         </div>
-      </nav>
 
-      {/* Dashboard Content */}
-      <main className="p-8">
-        <h2 className="text-3xl font-heading text-primary mb-6">Dashboard</h2>
+        {/* Scheduler */}
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-2 text-[var(--secondary)]">⏰ Scheduler</h2>
+          <p className="text-sm text-gray-300">Plan, schedule, and automate your content.</p>
+          <button
+            onClick={() => alert("Scheduler feature coming soon")}
+            className="mt-4 w-full bg-[var(--secondary)] hover:bg-green-700 text-black py-2 rounded"
+          >
+            Open Scheduler
+          </button>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* AI Post Generator */}
-          <div className="card">
-            <h3 className="text-xl font-heading mb-2">AI Post Generator</h3>
-            <p className="text-gray-400 mb-4">
-              Generate smart social media posts with AI.
-            </p>
-            <button className="primary w-full">Generate Post</button>
-          </div>
-
-          {/* Analytics */}
-          <div className="card">
-            <h3 className="text-xl font-heading mb-2">Analytics</h3>
-            <p className="text-gray-400 mb-4">
-              Track engagement, impressions, and reach.
-            </p>
-            <button className="secondary w-full">View Reports</button>
-          </div>
-
-          {/* Scheduling */}
-          <div className="card">
-            <h3 className="text-xl font-heading mb-2">Scheduling</h3>
-            <p className="text-gray-400 mb-4">
-              Plan and automate your content delivery.
-            </p>
-            <button className="accent w-full">Schedule Post</button>
-          </div>
+        {/* Analytics */}
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-2 text-[var(--accent)]">📊 Analytics</h2>
+          <p className="text-sm text-gray-300">Track engagement and measure performance.</p>
+          <button
+            onClick={() => alert("Analytics feature coming soon")}
+            className="mt-4 w-full bg-[var(--accent)] hover:bg-yellow-600 text-black py-2 rounded"
+          >
+            Open Analytics
+          </button>
         </div>
       </main>
     </div>

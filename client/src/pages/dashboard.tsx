@@ -14,7 +14,7 @@ export default function Dashboard() {
         return;
       }
 
-      const res = await fetch("/api/auth/me", {
+      const res = await fetch("/api/user/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

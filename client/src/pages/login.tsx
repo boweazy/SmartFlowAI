@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 
 export default function Login() {
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,7 +41,7 @@ export default function Login() {
       localStorage.setItem("token", data.token);
 
       // Redirect to dashboard
-      navigate("/dashboard");
+      setLocation("/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

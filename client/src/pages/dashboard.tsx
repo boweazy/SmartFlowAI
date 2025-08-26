@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export default function Dashboard() {
     async function fetchUser() {
       const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/login");
+        setLocation("/login");
         return;
       }
 
@@ -20,7 +20,7 @@ export default function Dashboard() {
 
       if (!res.ok) {
         localStorage.removeItem("token");
-        navigate("/login");
+        setLocation("/login");
         return;
       }
 
@@ -33,7 +33,7 @@ export default function Dashboard() {
 
   function handleLogout() {
     localStorage.removeItem("token");
-    navigate("/login");
+    setLocation("/login");
   }
 
   return (

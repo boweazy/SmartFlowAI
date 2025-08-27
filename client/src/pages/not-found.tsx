@@ -1,29 +1,34 @@
 import React from "react";
 import { Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2 items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
-          </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 text-center max-w-md">
+        <div className="flex justify-center mb-4">
+          <AlertCircle className="h-12 w-12 text-red-500" />
+        </div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">404</h1>
+        <p className="text-gray-600 mb-6">
+          Oops! The page you’re looking for doesn’t exist.
+        </p>
 
-          <p className="mt-4 text-sm text-gray-600 text-center">
-            Sorry, the page you are looking for does not exist.
-          </p>
+        <Link href="/login">
+          <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">
+            Go back to Login
+          </button>
+        </Link>
 
-          <div className="mt-6 text-center">
-            <Link href="/login" className="text-blue-500 underline">
-              Go back to Login
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+        <p className="mt-4 text-sm text-gray-500">
+          Or head to{" "}
+          <Link href="/">
+            <span className="text-blue-600 underline cursor-pointer">
+              SmartFlowAI Home
+            </span>
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

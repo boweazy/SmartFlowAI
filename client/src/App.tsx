@@ -1,4 +1,5 @@
 import { Route, Switch } from "wouter";
+import Landing from "./pages/landing";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import Feed from "./pages/feed";
@@ -9,13 +10,19 @@ import NotFound from "./pages/not-found";
 export default function App() {
   return (
     <Switch>
-      <Route path="/" component={Login} />
+      {/* Public landing */}
+      <Route path="/" component={Landing} />
+
+      {/* Auth */}
+      <Route path="/login" component={Login} />
+
+      {/* Private app */}
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/feed" component={Feed} />
       <Route path="/scheduler" component={Scheduler} />
       <Route path="/analytics" component={Analytics} />
 
-      {/* Catch-all frontend route */}
+      {/* Catch-all */}
       <Route>
         <NotFound />
       </Route>

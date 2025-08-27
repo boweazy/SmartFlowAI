@@ -1,7 +1,6 @@
 import { Route, Switch } from "wouter";
 
-// ✅ lowercase imports to match actual filenames
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Dashboard from "./pages/dashboard";
 import Analytics from "./pages/analytics";
 import Feed from "./pages/feed";
@@ -20,7 +19,7 @@ function App() {
       <Route path="/feed" component={Feed} />
       <Route path="/scheduler" component={Scheduler} />
 
-      {/* Fallback */}
+      {/* Catch-all fallback */}
       <Route component={NotFound} />
     </Switch>
   );

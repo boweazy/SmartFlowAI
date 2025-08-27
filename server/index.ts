@@ -1,11 +1,12 @@
 import { Express } from "express";
 import { createServer } from "http";
 
-import authRoutes from "./auth";
-import postRoutes from "./posts";
-import aiRoutes from "./ai";
-import schedulerRoutes from "./scheduler";
-import analyticsRoutes from "./analytics";
+// Correct imports to point into /routes
+import authRoutes from "./routes/auth";
+import postRoutes from "./routes/posts";
+import aiRoutes from "./routes/ai";
+import schedulerRoutes from "./routes/scheduler";
+import analyticsRoutes from "./routes/analytics";
 
 export async function registerRoutes(app: Express) {
   app.use("/api/auth", authRoutes);

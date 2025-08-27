@@ -1,3 +1,4 @@
+import Landing from "./pages/landing";
 import { Route, Switch } from "wouter";
 import Landing from "./pages/landing";
 import Login from "./pages/login";
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/" component={Landing} />
 
       {/* Auth */}
+    <Route path="/" component={Landing} />
       <Route path="/login" component={Login} />
 
       {/* Private app */}

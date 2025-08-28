@@ -1,15 +1,10 @@
-import { Router } from "express";
-import { analyticsService } from "../services/analytics";
+import express from "express";
 import { authenticateToken } from "../middleware/auth";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/overview", authenticateToken, async (req, res) => {
-  const overview = await analyticsService.getOverview(
-    (req as any).user.tenantId,
-    (req.query.timeframe as string) || "30d"
-  );
-  res.json(overview);
+router.get("/", authenticateToken, (req, res) => {
+  res.json({ message: "OK", route: __filename });
 });
 
 export default router;

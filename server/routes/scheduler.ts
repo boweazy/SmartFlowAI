@@ -1,10 +1,10 @@
+import express from "express";
 import { authenticateToken } from "../middleware/auth";
-import { Router } from "express";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/", authenticateToken (req, res) => {
-  res.json({ message: "Scheduler route placeholder" });
+router.get("/", authenticateToken, (req, res) => {
+  res.json({ message: "OK", route: __filename });
 });
 
 export default router;

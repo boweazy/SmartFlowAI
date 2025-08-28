@@ -7,7 +7,7 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
   if (!token) return res.status(401).json({ error: "No token provided" });
 
-  jwt.verify(token, process.env.JWT_SECRET || "changeme", (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || "supersecret123", (err, user) => {
     if (err) return res.status(403).json({ error: "Invalid token" });
     (req as any).user = user;
     next();

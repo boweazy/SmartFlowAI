@@ -1,19 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./index.html",
     "./client/src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#2563EB",   // SmartFlowAI blue
-          dark: "#1E3A8A",     // Navy
-          light: "#60A5FA",    // Sky
+          DEFAULT: "#2563EB",   // Blue
+          light: "#3B82F6",
+          dark: "#1E40AF"
         },
         accent: {
-          DEFAULT: "#F97316",  // Orange CTA
+          DEFAULT: "#F97316",   // Orange CTA
         }
       },
       fontFamily: {

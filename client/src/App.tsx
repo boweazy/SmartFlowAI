@@ -7,22 +7,26 @@ import Analytics from "./pages/analytics";
 import NotFound from "./pages/not-found";
 import Landing from "./pages/landing";
 import Demo from "./pages/demo";
+import Header from "./components/Header";
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="/" component={Landing} />
-      <Route path="/login" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/feed" component={Feed} />
-      <Route path="/scheduler" component={Scheduler} />
-      <Route path="/analytics" component={Analytics} />
-      <Route path="/demo" component={Demo} />
+    <>
+      <Header />
+      <Switch>
+        <Route path="/" component={Landing} />
+        <Route path="/login" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/feed" component={Feed} />
+        <Route path="/scheduler" component={Scheduler} />
+        <Route path="/analytics" component={Analytics} />
+        <Route path="/demo" component={Demo} />
 
-      {/* Catch-all frontend route */}
-      <Route>
-        <NotFound />
-      </Route>
-    </Switch>
+        {/* Catch-all frontend route */}
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </>
   );
 }

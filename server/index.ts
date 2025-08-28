@@ -58,3 +58,8 @@ export default createServer(app);
 app.get("/", (req: Request, res: Response) => {
   res.send("🚀 SmartFlowAI backend is running. Try /api/debug/env");
 });
+
+// Root healthcheck
+app.get("/", (req: Request, res: Response) => {
+  res.send("🚀 SmartFlowAI backend is running. Try /api/debug/env");
+});

@@ -21,3 +21,16 @@ export async function registerRoutes(app: Express) {
 
   return createServer(app);
 }
+
+// Debug route to verify environment variables
+import { Request, Response } from "express";
+
+if (process.env.NODE_ENV !== "production") {
+  app.get("/api/debug/env", (req: Request, res: Response) => {
+    res.json({
+      jwt: process.env.JWT_SECRET ? "✅ set" : "❌ missing",
+      db: process.env.DATABASE_URL ? "✅ set" : "❌ missing",
+      openai: process.env.OPENAI_API_KEY ? "✅ set" : "❌ missing",
+    });
+  });
+}

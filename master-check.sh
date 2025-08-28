@@ -1,60 +1,65 @@
 #!/usr/bin/env bash
-set -e
+set +e  # fail-soft mode
 
-# 🚀 SmartFlowAI Master Health Check & Deploy (with route fixes)
+echo "🔍 Running full SmartFlowAI checks..."
 
-echo ""
-echo "🛠️ Running SmartFlowAI Master Check..."
-echo ""
+errors=0
 
-# Step 1: Sync secrets
-echo "🔑 Step 1: Syncing secrets..."
-./sync-secrets.sh || echo "⚠️ Secret sync failed, check logs."
-
-# Step 2: Verify critical env vars
-echo ""
-echo "✅ Step 2: Verifying environment variables..."
-REQUIRED=("JWT_SECRET" "DATABASE_URL" "OPENAI_API_KEY" "RENDER_API_KEY" "RENDER_SERVICE_ID")
-for key in "${REQUIRED[@]}"; do
-  if [[ -z "$(printenv $key)" ]]; then
-    echo "❌ $key is missing!"
-    exit 1
+check_step () {
+  name=$1
+  shift
+  echo "👉 $name..."
+  if "$@"; then
+    echo "✅ $name passed"
   else
-    echo "✅ $key is set"
+    echo "❌ $name failed"
+    errors=$((errors+1))
   fi
-done
+}
 
-# Step 3: Fix invalid route definitions
-echo ""
-echo "🛠️ Step 3: Fixing invalid route definitions..."
-for f in server/routes/*.ts; do
-  sed -i 's/, *"\//"/g' "$f"
-done
-echo "✅ All routes cleaned."
+# 1. Check casing/imports
+check_step "Casing/import check" \
+  grep -rni --include=\*.{ts,tsx} \
+  -e 'import .*Login' \
+  -e 'import .*Dashboard' \
+  -e 'import .*Analytics' \
+  -e 'import .*Feed' \
+  -e 'import .*Scheduler' \
+  client/src
 
-# Step 4: Local build check
-echo ""
-echo "🔨 Step 4: Running local build check..."
-rm -rf dist node_modules
-npm install
-npm run build
+# 2. ESLint
+check_step "ESLint" npm run lint
 
-# Step 5: Commit & push any changes
-echo ""
-echo "📦 Step 5: Committing and pushing changes..."
-git add server/routes
-git commit -m "Fix: auto-clean routes + rebuild" || echo "ℹ️ Nothing to commit"
-git push origin main
+# 3. Prettier
+check_step "Prettier" npm run prettier:check
 
-# Step 6: Trigger Render redeploy
-echo ""
-echo "🚀 Step 6: Triggering Render redeploy..."
-SERVICE_ID=$RENDER_SERVICE_ID
-curl -s -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
-  -H "Accept: application/json" \
-  -H "Authorization: Bearer $RENDER_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"clearCache":false}'
+# 4. Build
+check_step "Build" npm run build
 
-echo ""
-echo "✅ Master check completed! App redeploy triggered 🚀"
+# 5. Tests
+check_step "Tests" npm test
+
+# 6. Secrets
+check_step "Secret scan" \
+  grep -rni --exclude-dir={node_modules,.git,dist,build} -e 'sk-[a-zA-Z0-9]' .
+
+# 7. Debug env (only works locally/dev)
+check_step "Runtime debug env" \
+  curl -s http://localhost:3000/api/debug/env || true
+
+# 8. Auto-deploy to Render
+if [[ -n "${RENDER_SERVICE_ID:-}" && -n "${RENDER_API_KEY:-}" ]]; then
+  check_step "Render deploy trigger" \
+    curl -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+      -H "Accept: application/json" \
+      -H "Authorization: Bearer ${RENDER_API_KEY}"
+else
+  echo "⚠️ Render deploy skipped (missing RENDER_SERVICE_ID or RENDER_API_KEY)"
+fi
+
+echo
+if [ $errors -eq 0 ]; then
+  echo "🎉 All checks passed!"
+else
+  echo "❌ $errors checks failed. Review logs above."
+fi

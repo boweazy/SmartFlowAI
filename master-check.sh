@@ -1,63 +1,60 @@
 #!/usr/bin/env bash
 set -e
 
-# ===========================================
-# 🔍 SmartFlowAI Master Health Check & Deploy
-# ===========================================
+# 🚀 SmartFlowAI Master Health Check & Deploy (with route fixes)
 
-echo "=========================================="
-echo "🚀 Running SmartFlowAI Master Check"
-echo "=========================================="
+echo ""
+echo "🛠️ Running SmartFlowAI Master Check..."
+echo ""
 
 # Step 1: Sync secrets
-echo ""
 echo "🔑 Step 1: Syncing secrets..."
 ./sync-secrets.sh || echo "⚠️ Secret sync failed, check logs."
 
 # Step 2: Verify critical env vars
 echo ""
-echo "🔍 Step 2: Verifying environment variables..."
-REQUIRED=("JWT_SECRET" "DATABASE_URL" "OPENAI_API_KEY")
-for KEY in "${REQUIRED[@]}"; do
-  if [[ -z "$(printenv $KEY)" ]]; then
-    echo "❌ $KEY is missing!"
+echo "✅ Step 2: Verifying environment variables..."
+REQUIRED=("JWT_SECRET" "DATABASE_URL" "OPENAI_API_KEY" "RENDER_API_KEY" "RENDER_SERVICE_ID")
+for key in "${REQUIRED[@]}"; do
+  if [[ -z "$(printenv $key)" ]]; then
+    echo "❌ $key is missing!"
     exit 1
   else
-    echo "✅ $KEY is set"
+    echo "✅ $key is set"
   fi
 done
 
-# Step 3: Build check
+# Step 3: Fix invalid route definitions
 echo ""
-echo "🛠️ Step 3: Running local build check..."
+echo "🛠️ Step 3: Fixing invalid route definitions..."
+for f in server/routes/*.ts; do
+  sed -i 's/, *"\//"/g' "$f"
+done
+echo "✅ All routes cleaned."
+
+# Step 4: Local build check
+echo ""
+echo "🔨 Step 4: Running local build check..."
+rm -rf dist node_modules
 npm install
 npm run build
 
-# Step 4: Commit & push any changes
+# Step 5: Commit & push any changes
 echo ""
-echo "📦 Step 4: Committing and pushing changes..."
-git add .
-git commit -m "Master check auto-update" || echo "ℹ️ Nothing to commit"
+echo "📦 Step 5: Committing and pushing changes..."
+git add server/routes
+git commit -m "Fix: auto-clean routes + rebuild" || echo "ℹ️ Nothing to commit"
 git push origin main
 
-# Step 5: Trigger Render redeploy via API
+# Step 6: Trigger Render redeploy
 echo ""
-echo "🚀 Step 5: Triggering Render redeploy..."
-if [[ -z "$RENDER_API_KEY" ]]; then
-  echo "❌ Missing RENDER_API_KEY. Please add it as an env var."
-  exit 1
-fi
-
-if [[ -z "$RENDER_SERVICE_ID" ]]; then
-  echo "❌ Missing RENDER_SERVICE_ID. Please add it as an env var."
-  exit 1
-fi
-
-curl -s -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
+echo "🚀 Step 6: Triggering Render redeploy..."
+SERVICE_ID=$RENDER_SERVICE_ID
+curl -s -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
   -H "Accept: application/json" \
-  -H "Authorization: Bearer $RENDER_API_KEY"
+  -H "Authorization: Bearer $RENDER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"clearCache":false}'
 
 echo ""
-echo "=========================================="
 echo "✅ Master check completed! App redeploy triggered 🚀"
-echo "=========================================="

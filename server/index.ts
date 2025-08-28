@@ -25,8 +25,8 @@ export async function registerRoutes(app: Express) {
     });
   }
 
-  // Catch-all for unknown API routes
-  app.use("/api/*", (req, res) => {
+  // ✅ Fixed catch-all for unknown API routes
+  app.all("/api/*", (req: Request, res: Response) => {
     res.status(404).json({ error: "API route not found" });
   });
 

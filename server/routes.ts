@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authService } from "../services/auth";
-import { storage } from "../storage";
+import { authService } from "../services/index";
+import { storage } from "../services/storage";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { authenticateToken } from "../middleware/auth";

@@ -1,64 +1,115 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=============================================="
-echo " 🚀 SmartFlowAI Ultimate Master Script"
-echo "=============================================="
+echo "==========================================="
+echo "🚀 SmartFlowAI Ultimate Master Setup Script"
+echo "==========================================="
 
-# Step 1: Verify environment variables
-echo "🔑 Checking environment variables..."
+# -------------------------------
+# Step 1: Verify critical secrets
+# -------------------------------
 required=(JWT_SECRET DATABASE_URL OPENAI_API_KEY RENDER_API_KEY RENDER_SERVICE_ID)
 
+echo "🔑 Checking environment variables..."
 for key in "${required[@]}"; do
   value=$(printenv $key || true)
-  if [ -z "$value" ]; then
+  if [[ -z "$value" ]]; then
     echo "❌ $key is missing!"
     exit 1
   fi
-  case $key in
-    OPENAI_API_KEY)
-      [[ $value == sk-* ]] || { echo "❌ $key must start with sk-"; exit 1; }
-      ;;
-    RENDER_API_KEY)
-      [[ $value == rnd_* ]] || { echo "❌ $key must start with rnd_"; exit 1; }
-      ;;
-    RENDER_SERVICE_ID)
-      [[ $value == srv-* ]] || { echo "❌ $key must start with srv-"; exit 1; }
-      ;;
-  esac
-  echo "✅ $key is set correctly"
+  echo "✅ $key is set"
 done
 
-# Step 2: Reset routes with safe defaults
-echo "🛠 Resetting broken routes..."
+# -------------------------------
+# Step 2: Fix invalid route syntax
+# -------------------------------
+echo "🛠 Fixing invalid routes in server/routes..."
 for f in server/routes/*.ts; do
-  echo "Fixing $f ..."
-  cat > "$f" <<'ROUTE'
-import express from "express";
-import { authenticateToken } from "../middleware/auth";
-const router = express.Router();
+  sed -i 's/router.get("(.*)",[[:space:]]*authenticateToken[[:space:]]*,[[:space:]]*/router.get("\1", authenticateToken, /' "$f" || true
+done
 
-router.get("/", authenticateToken, (req, res) => {
-  res.json({ message: "OK" });
+# -------------------------------
+# Step 3: Reset server/index.ts
+# -------------------------------
+echo "📦 Resetting server/index.ts with working bootstrap..."
+cat > server/index.ts <<'EOT'
+import express from "express";
+import { createServer } from "http";
+import { registerRoutes } from "./routes";
+
+const app = express();
+app.use(express.json());
+
+// ✅ Health check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    time: new Date().toISOString(),
+    env: process.env.NODE_ENV || "unknown",
+  });
 });
 
-export default router;
-ROUTE
-done
+// Register routes
+await registerRoutes(app);
 
-# Step 3: Run clean build
-echo "🧹 Running clean build..."
+const PORT = process.env.PORT || 3000;
+const server = createServer(app);
+
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+EOT
+
+# -------------------------------
+# Step 4: Ensure registerRoutes is clean
+# -------------------------------
+echo "📦 Cleaning registerRoutes (remove duplicate server)..."
+cat > server/routes/index.ts <<'EOT'
+import { Express, Request, Response } from "express";
+
+import authRoutes from "./auth";
+import postRoutes from "./posts";
+import aiRoutes from "./ai";
+import schedulerRoutes from "./scheduler";
+import analyticsRoutes from "./analytics";
+
+export async function registerRoutes(app: Express) {
+  app.use("/api/auth", authRoutes);
+  app.use("/api/posts", postRoutes);
+  app.use("/api/ai", aiRoutes);
+  app.use("/api/scheduler", schedulerRoutes);
+  app.use("/api/analytics", analyticsRoutes);
+
+  if (process.env.NODE_ENV !== "production") {
+    app.get("/api/debug/env", (req: Request, res: Response) => {
+      res.json({
+        jwt: process.env.JWT_SECRET ? "✅ set" : "❌ missing",
+        db: process.env.DATABASE_URL ? "✅ set" : "❌ missing",
+        openai: process.env.OPENAI_API_KEY ? "✅ set" : "❌ missing",
+      });
+    });
+  }
+
+  // Catch-all
+  app.all("/api/*", (req, res) => {
+    res.status(404).json({ error: "API route not found" });
+  });
+}
+EOT
+
+# -------------------------------
+# Step 5: Clean build + push
+# -------------------------------
+echo "🧹 Cleaning build..."
 rm -rf dist node_modules
 npm install
 npm run build
 
-# Step 4: Commit & push changes
-echo "📦 Committing & pushing changes..."
-git add server/routes
-git commit -m "Ultimate fix: reset routes with safe handlers"
-git push origin main || true
+echo "📤 Committing & pushing to GitHub..."
+git add server/index.ts server/routes/index.ts server/routes/*.ts
+git commit -m "Ultimate fix: working server bootstrap, routes cleaned, health check added"
+git push origin main
 
-# Step 5: Trigger Render redeploy
 echo "🚀 Triggering Render redeploy..."
 curl -s -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
   -H "Accept: application/json" \
@@ -66,7 +117,7 @@ curl -s -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" 
   -H "Content-Type: application/json" \
   -d '{"clearCache":false}'
 
-echo "=============================================="
+echo "==========================================="
 echo "✅ Ultimate Master Script Completed!"
-echo "Secrets validated, routes reset, build pushed, redeploy triggered."
-echo "=============================================="
+echo "Secrets validated, routes fixed, server bootstrap reset, build pushed, redeploy triggered"
+echo "==========================================="

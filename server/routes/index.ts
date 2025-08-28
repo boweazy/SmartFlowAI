@@ -1,10 +1,10 @@
-import express, { Express, Request, Response } from "express";
-import { createServer } from "http";
-import authRoutes from "./routes/auth";
-import postRoutes from "./routes/posts";
-import aiRoutes from "./routes/ai";
-import schedulerRoutes from "./routes/scheduler";
-import analyticsRoutes from "./routes/analytics";
+import { Express, Request, Response } from "express";
+
+import authRoutes from "./auth";
+import postRoutes from "./posts";
+import aiRoutes from "./ai";
+import schedulerRoutes from "./scheduler";
+import analyticsRoutes from "./analytics";
 
 export async function registerRoutes(app: Express) {
   app.use("/api/auth", authRoutes);
@@ -23,15 +23,8 @@ export async function registerRoutes(app: Express) {
     });
   }
 
-  app.all("/api/*", (req: Request, res: Response) => {
+  // Catch-all
+  app.all("/api/*", (req, res) => {
     res.status(404).json({ error: "API route not found" });
   });
-
-  return createServer(app);
 }
-
-const app = express();
-app.use(express.json());
-registerRoutes(app);
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

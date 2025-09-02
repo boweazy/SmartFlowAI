@@ -7,13 +7,13 @@ echo "🔐 SmartFlowAI Power Sync & Deploy Starting..."
 JWT_SECRET=${JWT_SECRET:-$(openssl rand -hex 32)}
 echo "✨ JWT_SECRET generated/loaded: $JWT_SECRET"
 
-# === 2. Load or set defaults ===
+# === 2. Load other keys from env or defaults ===
 OPENAI_API_KEY=${OPENAI_API_KEY:-your-openai-key}
 RAW_DATABASE_URL=${DATABASE_URL:-file:./dev.db}
 STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-your-stripe-secret}
 SMTP_PASSWORD=${SMTP_PASSWORD:-your-smtp-pass}
 
-# === 2.1 Clean DATABASE_URL (fix duplicates) ===
+# === 2.1 Clean DATABASE_URL (fix duplicate postgres:// bug) ===
 if [[ "$RAW_DATABASE_URL" == *"postgresql://postgresql://"* ]]; then
   DATABASE_URL=$(echo "$RAW_DATABASE_URL" | sed 's/postgresql:\/\/postgresql:\/\///')
 else
@@ -30,18 +30,7 @@ SMTP_PASSWORD=$SMTP_PASSWORD
 EOF
 echo "✅ .env updated"
 
-# === 4. Backup secrets into Replit Secrets ===
-if [[ -n "$REPL_SLUG" ]]; then
-  echo "📦 Backing up secrets into Replit..."
-  npx repl secrets set JWT_SECRET="$JWT_SECRET"
-  npx repl secrets set OPENAI_API_KEY="$OPENAI_API_KEY"
-  npx repl secrets set DATABASE_URL="$DATABASE_URL"
-  npx repl secrets set STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY"
-  npx repl secrets set SMTP_PASSWORD="$SMTP_PASSWORD"
-  echo "✅ Secrets stored in Replit vault"
-fi
-
-# === 5. Write .env.example ===
+# === 4. Update .env.example (safe template) ===
 cat > .env.example <<EOF
 JWT_SECRET=your-jwt-secret
 OPENAI_API_KEY=your-openai-key
@@ -51,12 +40,12 @@ SMTP_PASSWORD=your-smtp-pass
 EOF
 echo "✅ .env.example updated"
 
-# === 6. Install dependencies ===
+# === 5. Install deps just in case ===
 echo "📦 Checking runtime dependencies..."
 npm install --include=dev >/dev/null 2>&1
 echo "✅ Dependencies installed"
 
-# === 7. Update Render secrets ===
+# === 6. Sync to Render (requires RENDER_API_KEY + RENDER_SERVICE_ID) ===
 if [[ -n "$RENDER_API_KEY" && -n "$RENDER_SERVICE_ID" ]]; then
   echo "🚀 Updating secrets on Render..."
   curl -s -X PATCH \
@@ -77,6 +66,19 @@ else
   echo "⚠️ Skipped Render sync (missing RENDER_API_KEY or RENDER_SERVICE_ID)"
 fi
 
+# === 7. Sync to GitHub Actions Secrets (requires gh CLI + GH_TOKEN) ===
+if gh --version >/dev/null 2>&1; then
+  echo "🔑 Syncing secrets to GitHub Actions..."
+  gh secret set JWT_SECRET --body "$JWT_SECRET"
+  gh secret set OPENAI_API_KEY --body "$OPENAI_API_KEY"
+  gh secret set DATABASE_URL --body "$DATABASE_URL"
+  gh secret set STRIPE_SECRET_KEY --body "$STRIPE_SECRET_KEY"
+  gh secret set SMTP_PASSWORD --body "$SMTP_PASSWORD"
+  echo "✅ GitHub Actions secrets updated"
+else
+  echo "⚠️ Skipped GitHub sync (gh CLI not installed or no GH_TOKEN)"
+fi
+
 # === 8. Run DB migrations ===
 if [ -f drizzle.config.ts ] || [ -f drizzle.config.js ]; then
   echo "🗄️ Running DB migrations..."
@@ -85,16 +87,16 @@ else
   echo "ℹ️ No drizzle config found, skipping migrations"
 fi
 
-# === 9. Build ===
+# === 9. Clean + rebuild ===
 echo "🧹 Cleaning dist..."
 rm -rf dist
 npm run build
 echo "✅ Build completed"
 
-# === 10. Git push (safe) ===
+# === 10. Push changes to GitHub ===
 echo "📦 Pushing to GitHub..."
-git add .gitignore .env.example dist >/dev/null 2>&1 || true
-git commit -m "chore: sync secrets, db, build [auto]" >/dev/null 2>&1 || true
+git add .env.example dist >/dev/null 2>&1 || true
+git commit -m "chore: sync secrets, db, build" >/dev/null 2>&1 || true
 git push origin main >/dev/null 2>&1 || true
 echo "✅ Repo pushed to GitHub"
 
@@ -111,12 +113,14 @@ else
   echo "⚠️ Skipped Render deploy (missing RENDER_API_KEY or RENDER_SERVICE_ID)"
 fi
 
-# === 12. Final Output ===
+# === 12. Final recap ===
 echo ""
-echo "📋 Secrets now live in:"
-echo " - .env (local runtime)"
-echo " - .env.example (safe repo defaults)"
-echo " - Replit Secrets Vault (backup)"
-echo " - Render Dashboard (production)"
+echo "📋 Secrets now synced everywhere:"
+echo "-----------------------------------------"
+echo "JWT_SECRET=$JWT_SECRET"
+echo "OPENAI_API_KEY=$OPENAI_API_KEY"
+echo "DATABASE_URL=$DATABASE_URL"
+echo "STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY"
+echo "SMTP_PASSWORD=$SMTP_PASSWORD"
 echo "-----------------------------------------"
 echo "🎉 Full Power Sync complete!"

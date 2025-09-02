@@ -24,7 +24,7 @@ export default defineConfig(async () => {
     build: {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
-      chunkSizeWarningLimit: 2000, // ⬅️ raised from 500kb → 2MB
+      chunkSizeWarningLimit: 2000, // ✅ lives here, not in package.json
     },
     server: {
       fs: {

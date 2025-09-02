@@ -1,32 +1,19 @@
-import { Route, Switch } from "wouter";
-import Login from "./pages/login";
-import Dashboard from "./pages/dashboard";
-import Feed from "./pages/feed";
-import Scheduler from "./pages/scheduler";
-import Analytics from "./pages/analytics";
-import NotFound from "./pages/not-found";
-import Landing from "./pages/landing";
-import Demo from "./pages/demo";
-import Header from "./components/Header";
+import { motion } from "framer-motion";
 
-export default function App() {
+function App() {
   return (
-    <>
-      <Header />
-      <Switch>
-        <Route path="/" component={Landing} />
-        <Route path="/login" component={Login} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/feed" component={Feed} />
-        <Route path="/scheduler" component={Scheduler} />
-        <Route path="/analytics" component={Analytics} />
-        <Route path="/demo" component={Demo} />
-
-        {/* Catch-all frontend route */}
-        <Route>
-          <NotFound />
-        </Route>
-      </Switch>
-    </>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+      <motion.h1
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-5xl font-bold"
+      >
+        🚀 SmartFlowAI
+      </motion.h1>
+      <p className="mt-4 text-lg opacity-80">Next-gen AI Automation Suite</p>
+    </div>
   );
 }
+
+export default App;

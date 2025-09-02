@@ -1,10 +1,16 @@
-import express from "express";
-import { authenticateToken } from "../middleware/auth";
+import { Router } from "express";
+const router = Router();
 
-const router = express.Router();
-
-router.get("/", authenticateToken, (req, res) => {
-  res.json({ message: "OK" });
+router.post("/login", (req, res) => {
+  res.json({ message: "Login endpoint placeholder" });
 });
 
-export default router;
+router.post("/register", (req, res) => {
+  res.json({ message: "Register endpoint placeholder" });
+});
+
+router.post("/logout", (req, res) => {
+  res.json({ message: "Logout endpoint placeholder" });
+});
+
+export { router as authRouter };

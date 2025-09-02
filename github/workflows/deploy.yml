@@ -1,4 +1,4 @@
-name: SmartFlowAI Deploy
+name: SmartFlowAI CI/CD Pipeline 🚀
 
 on:
   push:
@@ -6,55 +6,45 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
+      # === Checkout Repo ===
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # 2. Setup Node.js
+      # === Node Setup ===
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: 20
+          cache: "npm"
 
-      # 3. Install dependencies
+      # === Install Dependencies ===
       - name: Install dependencies
-        run: npm install --include=dev
+        run: npm install
 
-      # 4. Run master-sync.sh (handles Render + DB + build)
-      - name: Super Sync & Deploy
-        run: ./scripts/master-sync.sh
+      # === Run Checks / Lint / TypeScript ===
+      - name: Run Master Check
+        run: |
+          chmod +x scripts/master-check.sh
+          ./scripts/master-check.sh
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      # 5. Sync secrets to Replit
-      - name: Sync secrets to Replit
-        run: |
-          curl -X POST "https://replit.com/api/v0/repls/${{ secrets.REPLIT_REPL_ID }}/secrets" \
-            -H "Authorization: Bearer ${{ secrets.REPLIT_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '[
-              {"key":"JWT_SECRET","value":"${{ secrets.JWT_SECRET }}"},
-              {"key":"OPENAI_API_KEY","value":"${{ secrets.OPENAI_API_KEY }}"},
-              {"key":"DATABASE_URL","value":"${{ secrets.DATABASE_URL }}"},
-              {"key":"STRIPE_SECRET_KEY","value":"${{ secrets.STRIPE_SECRET_KEY }}"},
-              {"key":"SMTP_PASSWORD","value":"${{ secrets.SMTP_PASSWORD }}"}
-            ]'
+      # === Build Project ===
+      - name: Build Project
+        run: npm run build
 
-      # 6. Push back changes (like updated .env.example)
-      - name: Push back changes
+      # === Deploy to Render (only if checks + build pass) ===
+      - name: Deploy to Render
+        if: success()
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add .env.example dist || true
-          git commit -m "chore: auto-sync secrets & build [CI skip]" || true
-          git push
+          curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+          -H "Accept: application/json" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"

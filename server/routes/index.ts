@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import { type Express, type Request, type Response } from "express";
 
 import authRoutes from "./auth";
 import postRoutes from "./posts";
@@ -7,12 +7,13 @@ import schedulerRoutes from "./scheduler";
 import analyticsRoutes from "./analytics";
 
 export async function registerRoutes(app: Express) {
+  // Register all API routes
   app.use("/api/auth", authRoutes);
   app.use("/api/posts", postRoutes);
   app.use("/api/ai", aiRoutes);
   app.use("/api/scheduler", schedulerRoutes);
   app.use("/api/analytics", analyticsRoutes);
-
+  
   if (process.env.NODE_ENV !== "production") {
     app.get("/api/debug/env", (req: Request, res: Response) => {
       res.json({
@@ -22,9 +23,4 @@ export async function registerRoutes(app: Express) {
       });
     });
   }
-
-  // Catch-all
-  app.all("/api/*", (req, res) => {
-    res.status(404).json({ error: "API route not found" });
-  });
 }

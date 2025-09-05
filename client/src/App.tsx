@@ -1,18 +1,34 @@
-import { motion } from "framer-motion";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Switch, Route, Redirect } from "wouter";
+import { queryClient } from "@/lib/queryClient";
+import { Toaster } from "@/components/ui/toaster";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Dashboard from "@/pages/Dashboard";
 
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-      <motion.h1
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-5xl font-bold"
-      >
-        🚀 SmartFlowAI
-      </motion.h1>
-      <p className="mt-4 text-lg opacity-80">Next-gen AI Automation Suite</p>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen">
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/">
+            <Redirect to="/dashboard" />
+          </Route>
+          <Route>
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Not Found</h1>
+                <p className="text-gray-600">The page you're looking for doesn't exist.</p>
+              </div>
+            </div>
+          </Route>
+        </Switch>
+        <Toaster />
+      </div>
+    </QueryClientProvider>
   );
 }
 

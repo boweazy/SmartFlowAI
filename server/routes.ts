@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authService } from "../services/index";
-import { storage } from "../services/storage";
+import { authService } from "./services/index";
+import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
-import { authenticateToken } from "../middleware/auth";
+import { authenticateToken } from "./middleware/auth";
 
 const router = Router();
 

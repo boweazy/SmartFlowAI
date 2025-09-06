@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import session from "express-session";
 import pgSession from "connect-pg-simple";
 import cors from "cors";
+import routes from "./routes.js";
 
 // ✅ Needed for __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +27,7 @@ app.use(
     secret: process.env.JWT_SECRET || "supersecret",
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false } // Set to true in production with HTTPS
   })
 );
 
@@ -33,6 +35,8 @@ app.use(
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "SmartFlowAI API running 🚀" });
 });
+
+app.use("/api", routes);
 
 // ✅ Serve frontend build in production
 if (process.env.NODE_ENV === "production") {

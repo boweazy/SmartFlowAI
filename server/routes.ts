@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authService } from "./services/index";
 import { storage } from "./storage";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema } from "../shared/schema.js";
 import { z } from "zod";
 import { authenticateToken } from "./middleware/auth";
 
@@ -9,7 +9,10 @@ const router = Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const userData = insertUserSchema.extend({ confirmPassword: z.string() }).parse(req.body);
+    const userData = insertUserSchema.extend({ 
+      password: z.string(),
+      confirmPassword: z.string() 
+    }).parse(req.body);
     if (userData.password !== userData.confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }

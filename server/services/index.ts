@@ -1,4 +1,4 @@
-export { authService } from "./auth-service";
-export { AIContentService } from "./ai-content";
-export { AnalyticsService } from "./analytics";
-export { SchedulerService } from "./scheduler";
+export { authService } from "./auth-service.js";
+export { AIContentService } from "./ai-content.js";
+export { AnalyticsService } from "./analytics.js";
+export { SchedulerService } from "./scheduler.js";

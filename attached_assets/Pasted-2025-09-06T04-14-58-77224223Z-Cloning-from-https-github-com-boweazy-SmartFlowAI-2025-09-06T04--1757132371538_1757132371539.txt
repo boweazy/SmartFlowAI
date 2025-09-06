@@ -1,0 +1,47 @@
+2025-09-06T04:14:58.77224223Z ==> Cloning from https://github.com/boweazy/SmartFlowAI
+2025-09-06T04:14:59.226368277Z ==> Checking out commit 1e76c794a81372d406ef3f3a13e92ab2627b36bd in branch main
+2025-09-06T04:15:00.850486753Z ==> Using Node.js version 22.16.0 (default)
+2025-09-06T04:15:00.878162853Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-09-06T04:15:02.732687588Z ==> Running build command 'npm install && npm run build'...
+2025-09-06T04:15:10.798797267Z 
+2025-09-06T04:15:10.798831417Z added 522 packages, and audited 523 packages in 8s
+2025-09-06T04:15:10.798852948Z 
+2025-09-06T04:15:10.798860068Z 70 packages are looking for funding
+2025-09-06T04:15:10.798876189Z   run `npm fund` for details
+2025-09-06T04:15:10.821311329Z 
+2025-09-06T04:15:10.821337669Z 5 moderate severity vulnerabilities
+2025-09-06T04:15:10.821342819Z 
+2025-09-06T04:15:10.82134756Z To address all issues (including breaking changes), run:
+2025-09-06T04:15:10.82135232Z   npm audit fix --force
+2025-09-06T04:15:10.82135598Z 
+2025-09-06T04:15:10.82136063Z Run `npm audit` for details.
+2025-09-06T04:15:11.00173082Z 
+2025-09-06T04:15:11.0017533Z > rest-express@1.0.0 build
+2025-09-06T04:15:11.0017579Z > vite build && esbuild server/index.ts --platform=node --external:dotenv --external:pg --external:ws --external:cors --packages=external --bundle --format=esm --outdir=dist
+2025-09-06T04:15:11.00176207Z 
+2025-09-06T04:15:11.273082516Z vite v5.4.19 building for production...
+2025-09-06T04:15:11.3495908Z transforming...
+2025-09-06T04:15:11.356137487Z node:internal/process/promises:394
+2025-09-06T04:15:11.356155367Z     triggerUncaughtException(err, true /* fromPromise */);
+2025-09-06T04:15:11.356159797Z     ^
+2025-09-06T04:15:11.356163437Z 
+2025-09-06T04:15:11.356167517Z [Failed to load PostCSS config: Failed to load PostCSS config (searchPath: /opt/render/project/src/client): [Error] Loading PostCSS Plugin failed: Cannot find module '@tailwindcss/postcss'
+2025-09-06T04:15:11.356172728Z Require stack:
+2025-09-06T04:15:11.356178538Z - /opt/render/project/src/client/postcss.config.js
+2025-09-06T04:15:11.356183698Z 
+2025-09-06T04:15:11.356189118Z (@/opt/render/project/src/client/postcss.config.js)
+2025-09-06T04:15:11.356195098Z Error: Loading PostCSS Plugin failed: Cannot find module '@tailwindcss/postcss'
+2025-09-06T04:15:11.356200948Z Require stack:
+2025-09-06T04:15:11.356206138Z - /opt/render/project/src/client/postcss.config.js
+2025-09-06T04:15:11.356211248Z 
+2025-09-06T04:15:11.356216258Z (@/opt/render/project/src/client/postcss.config.js)
+2025-09-06T04:15:11.356222309Z     at load (file:///opt/render/project/src/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33632:11)
+2025-09-06T04:15:11.356227629Z     at file:///opt/render/project/src/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33657:16
+2025-09-06T04:15:11.356233629Z     at Array.map (<anonymous>)
+2025-09-06T04:15:11.356238789Z     at plugins (file:///opt/render/project/src/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33656:8)
+2025-09-06T04:15:11.356245119Z     at processResult (file:///opt/render/project/src/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33726:14)
+2025-09-06T04:15:11.356250819Z     at file:///opt/render/project/src/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33856:14]
+2025-09-06T04:15:11.356269839Z 
+2025-09-06T04:15:11.35627406Z Node.js v22.16.0
+2025-09-06T04:15:11.387015534Z ==> Build failed 😞
+2025-09-06T04:15:11.387038544Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys

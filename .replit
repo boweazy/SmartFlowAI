@@ -1,5 +1,8 @@
 modules = ["nodejs-20", "web", "postgresql-16"]
+
+# 👇 Run both backend (5000) and frontend (5173)
 run = "npm run dev"
+
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
@@ -22,18 +25,17 @@ name = "Project"
 mode = "parallel"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow]]
-name = "Start application"
-author = "agent"
-
+# 👇 Backend on 5000
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev --prefix server"
 waitForPort = 5000
+
+# 👇 Frontend on 5173
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev --prefix client -- --host 0.0.0.0 --port 5173"
+waitForPort = 5173
 
 [agent]
 
@@ -41,11 +43,6 @@ waitForPort = 5000
 localPort = 5000
 externalPort = 80
 
-[rules]
-
-[rules.formatter]
-
-[rules.formatter.fileExtensions]
-
-[rules.formatter.fileExtensions.".ts"]
-id = "module:web/languageServer:typescript-language-server"
+[[ports]]
+localPort = 5173
+externalPort = 5173

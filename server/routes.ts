@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
 router.get("/me", authenticateToken, async (req, res) => {
   const user = await storage.getUser((req as any).user.userId);
   if (!user) return res.status(404).json({ message: "User not found" });
-  const { password, ...profile } = user;
+  const { passwordHash, ...profile } = user;
   res.json(profile);
 });
 

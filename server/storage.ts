@@ -72,6 +72,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      role: insertUser.role || "user",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -102,6 +103,8 @@ export class MemStorage implements IStorage {
     const tenant: Tenant = {
       ...insertTenant,
       id,
+      branding: insertTenant.branding || null,
+      settings: insertTenant.settings || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -143,6 +146,10 @@ export class MemStorage implements IStorage {
     const post: Post = {
       ...insertPost,
       id,
+      status: insertPost.status || "draft",
+      scheduledAt: insertPost.scheduledAt || null,
+      publishedAt: insertPost.publishedAt || null,
+      metadata: insertPost.metadata || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -177,6 +184,7 @@ export class MemStorage implements IStorage {
     const analytics: Analytics = {
       ...insertAnalytics,
       id,
+      metrics: insertAnalytics.metrics || null,
       recordedAt: new Date(),
     };
     this.analytics.set(id, analytics);

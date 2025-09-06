@@ -14,12 +14,12 @@ export class AuthService {
       throw new Error("User already exists with this email");
     }
 
-    // Hash password
+    // Hash password  
     const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(userData.password, saltRounds);
+    const passwordHash = await bcrypt.hash((userData as any).password, saltRounds);
 
-    // Create user (remove confirmPassword and replace password with hash)
-    const { confirmPassword, password, ...userDataToStore } = userData;
+    // Create user (remove confirmPassword and password)
+    const { confirmPassword, ...userDataToStore } = userData;
     const newUser = await storage.createUser({
       ...userDataToStore,
       passwordHash,

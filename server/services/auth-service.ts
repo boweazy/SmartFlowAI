@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { storage } from "../storage";
-import { type InsertUser } from "@shared/schema";
+import { storage } from "../storage.js";
+import { type InsertUser } from "../../shared/schema.js";
 
 export class AuthService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "supersecret123";

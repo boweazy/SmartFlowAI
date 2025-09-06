@@ -1,8 +1,8 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import session from "express-session";
-import pgSession from "connect-pg-simple";
+// import session from "express-session";
+// import pgSession from "connect-pg-simple";
 import cors from "cors";
 import routes from "./routes.js";
 
@@ -17,19 +17,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Example session setup (you can adjust/remove if not needed)
-const PgSession = pgSession(session);
-app.use(
-  session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL, // Uses your Neon/Render PG URL
-    }),
-    secret: process.env.JWT_SECRET || "supersecret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false } // Set to true in production with HTTPS
-  })
-);
+// Session setup temporarily disabled for testing
+// TODO: Add proper session handling later
 
 // ✅ API routes
 app.get("/api/health", (req, res) => {

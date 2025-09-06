@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+
 export function useToast() {
-  const [messages, setMessages] = useState<string[]>([]);
-  function toast(msg: string) {
-    setMessages([...messages, msg]);
-    console.log("Toast:", msg);
-  }
-  return { toast, messages };
+  const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
+
+  const addToast = useCallback((message: string) => {
+    const id = Date.now().toString();
+    setToasts((prev) => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
+  }, []);
+
+  return { toasts, addToast };
 }

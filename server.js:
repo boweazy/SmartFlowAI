@@ -1,0 +1,26 @@
+const express = require("express");
+const crypto = require("crypto");
+const app = express();
+
+app.use(express.json({ verify:(req,res,buf)=>{ req.rawBody=buf } }));
+
+app.get("/health", (_req,res)=>res.json({ok:true,site:"SmartFlow Systems"}));
+
+app.post("/gh-sync", (req,res)=>{
+  const sig = req.get("x-hub-signature-256") || "";
+  const secret = process.env.SYNC_TOKEN || "";
+  const h = "sha256=" + crypto.createHmac("sha256", secret).update(req.rawBody||Buffer.alloc(0)).digest("hex");
+  const okHmac = sig && secret && (()=>{try{
+    return crypto.timingSafeEqual(Buffer.from(h), Buffer.from(sig));
+  }catch{return false}})();
+
+  const okBearer = (req.get("authorization")||"") === `Bearer ${process.env.REPLIT_TOKEN}`;
+
+  if (!okHmac && !okBearer) return res.status(401).send("nope");
+
+  console.log("[SFS] Deploy", req.body);
+  res.json({status:"ok"});
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, ()=>console.log("SFS webhook on:"+PORT));
